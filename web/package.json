@@ -3,6 +3,10 @@
   "description": "Octant is an extensible platform that provides modules that help developers better understand their Kuberenetes resources.",
   "author": "The Octant Team",
   "version": "0.25.1",
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=20"
+  },
   "homepage": "https://octant.dev",
   "repository": {
     "type": "git",
@@ -16,20 +20,19 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "node ./node_modules/@angular/cli/bin/ng build --configuration production --output-hashing=all",
-    "build-electron": "npx tsc main.ts && npm run build -- --base-href ./",
+    "build-electron": "pnpm exec tsc main.ts && pnpm run build -- --base-href ./",
     "test": "ng test --watch=false --browsers=ElectronDebug",
     "test:headless": "ng test --watch=false --browsers=ChromeHeadless --source-map=false",
     "lint": "prettier -c 'src/**/*.ts'",
     "clean": "rimraf ./dist/octant/*",
     "e2e": "ng e2e",
     "prettier": "prettier --write \"src/{app,environments,assets}/**/*{.ts,.js,.json,.css,.scss}\"",
-    "electron:serve": "wait-on http-get://localhost:7777 && npm run electron:serve-tsc && electron . --serve",
-    "electron:serve-tsc": "npx tsc -p tsconfig.serve.json",
-    "electron:local": "npx tsc main.ts && npx ng build --base-href ./ && npx electron --local .",
-    "electron:build": "npm run build-electron && npx electron-builder -p never",
+    "electron:serve": "wait-on http-get://localhost:7777 && pnpm run electron:serve-tsc && electron . --serve",
+    "electron:serve-tsc": "pnpm exec tsc -p tsconfig.serve.json",
+    "electron:local": "pnpm exec tsc main.ts && pnpm exec ng build --base-href ./ && pnpm exec electron --local .",
+    "electron:build": "pnpm run build-electron && pnpm exec electron-builder -p never",
     "storybook": "start-storybook -p 6006 -s src/assets",
     "build-storybook": "node ./node_modules/@storybook/angular/bin/build.js build-storybook -c .storybook",
-    "preinstall": "npx npm-force-resolutions",
     "postinstall": "rimraf ./node_modules/cytoscape-node-html-label/dist/cytoscape-node-html-label.d.ts"
   },
   "prettier": {
@@ -83,6 +86,7 @@
     "monaco-editor": "^0.21.2",
     "ngx-highlightjs": "^4.1.2",
     "open": "^8.0.7",
+    "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-ngx": "^0.2.2",
     "rxjs": "^6.6.3",
     "serialize-javascript": "^5.0.1",
@@ -133,7 +137,6 @@
     "karma-spec-reporter": "0.0.32",
     "marked": "^2.0.1",
     "mini-css-extract-plugin": "^2.2.0",
-    "npm-force-resolutions": "0.0.10",
     "prettier": "^2.3.2",
     "protractor": "~7.0.0",
     "react": "^17.0.2",
@@ -148,13 +151,5 @@
     "tslint-plugin-prettier": "^2.3.0",
     "typescript": "~4.3.5",
     "wait-on": "^5.2.0"
-  },
-  "resolutions": {
-    "browserslist": "^4.16.5",
-    "dns-packet": "^5.2.2",
-    "hosted-git-info": "^3.0.8",
-    "merge": "^2.1.1",
-    "xmlhttprequest-ssl": "^1.6.1",
-    "yargs-parser": "^18.1.2"
   }
 }

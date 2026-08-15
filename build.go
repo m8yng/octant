@@ -59,7 +59,7 @@ func main() {
 			Use:   "ci-quick",
 			Short: "full build, skipping tests",
 			Run: func(cmd *cobra.Command, args []string) {
-				webDeps("--prefer-offline", "--no-audit")
+				webDeps()
 				webBuild()
 				build()
 			},
@@ -76,8 +76,7 @@ func main() {
 			Short: "run client tests",
 			Run: func(cmd *cobra.Command, args []string) {
 				verifyRegistry()
-				verifyNpmCache()
-				webDeps("--prefer-offline", "--no-audit")
+				webDeps()
 				webTest()
 			},
 		},
@@ -86,8 +85,7 @@ func main() {
 			Short: "client build, skipping tests",
 			Run: func(cmd *cobra.Command, args []string) {
 				verifyRegistry()
-				verifyNpmCache()
-				webDeps("--prefer-offline", "--no-audit")
+				webDeps()
 				webBuild()
 			},
 		},
@@ -156,7 +154,7 @@ func main() {
 			Use:   "build-electron",
 			Short: "server build to extraResources, skipping tests",
 			Run: func(cmd *cobra.Command, args []string) {
-				webDeps("--prefer-offline", "--no-audit")
+				webDeps()
 				buildElectron()
 				webBuildElectron()
 			},
@@ -280,7 +278,7 @@ func build() {
 
 // buildElectron builds an Octant binary without web assets
 func buildElectron() {
-	cleanCmd := newCmd("npm", nil, "run", "clean")
+	cleanCmd := newCmd("pnpm", nil, "run", "clean")
 	cleanCmd.Stdout = os.Stdout
 	cleanCmd.Stderr = os.Stderr
 	cleanCmd.Stdin = os.Stdin
@@ -337,9 +335,8 @@ func goFmt(update bool) {
 	}
 }
 
-func webDeps(opts ...string) {
-	args := append([]string{"ci"}, opts...)
-	cmd := newCmd("npm", nil, args...)
+func webDeps() {
+	cmd := newCmd("pnpm", nil, "install", "--frozen-lockfile", "--prefer-offline")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -350,7 +347,7 @@ func webDeps(opts ...string) {
 }
 
 func webTest() {
-	cmd := newCmd("npm", nil, "run", "test:headless")
+	cmd := newCmd("pnpm", nil, "run", "test:headless")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -361,7 +358,7 @@ func webTest() {
 }
 
 func webBuild() {
-	cmd := newCmd("npm", nil, "run", "build")
+	cmd := newCmd("pnpm", nil, "run", "build")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -372,7 +369,7 @@ func webBuild() {
 }
 
 func webBuildElectron() {
-	cmd := newCmd("npm", nil, "run", "electron:build")
+	cmd := newCmd("pnpm", nil, "run", "electron:build")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -383,7 +380,7 @@ func webBuildElectron() {
 }
 
 func webLint() {
-	cmd := newCmd("npm", nil, "run", "lint")
+	cmd := newCmd("pnpm", nil, "run", "lint")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -397,7 +394,7 @@ func serve() {
 	var wg sync.WaitGroup
 
 	uiVars := map[string]string{"API_BASE": "http://localhost:7777"}
-	uiCmd := newCmd("npm", uiVars, "run", "start")
+	uiCmd := newCmd("pnpm", uiVars, "run", "start")
 	uiCmd.Stdout = os.Stdout
 	uiCmd.Stderr = os.Stderr
 	uiCmd.Stdin = os.Stdin
@@ -410,7 +407,7 @@ func serve() {
 	go func() {
 		defer wg.Done()
 		if err := uiCmd.Wait(); err != nil {
-			log.Fatalf("serve: npm run: %s", err)
+			log.Fatalf("serve: pnpm run: %s", err)
 		}
 	}()
 
@@ -535,16 +532,5 @@ func verifyRegistry() {
 	}
 	if len(out) > 0 {
 		log.Fatalf("found registry: %s", string(out))
-	}
-}
-
-func verifyNpmCache() {
-	cmd := newCmd("npm", nil, "cache", "verify")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Dir = "./web"
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("NPM cache verify: %s", err)
 	}
 }

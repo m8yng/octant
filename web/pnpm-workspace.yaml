@@ -1,0 +1,19 @@
+allowBuilds:
+  '@angular/cli': true
+  core-js: true
+  core-js-pure: true
+  electron: true
+  esbuild: true
+  fsevents: false
+  nice-napi: true
+
+overrides:
+  babel-loader: 8.4.1
+  browserslist: ^4.16.5
+  dns-packet: ^5.2.2
+  hosted-git-info: ^3.0.8
+  loader-utils: 2.0.4
+  merge: ^2.1.1
+  webpack: 5.61.0
+  xmlhttprequest-ssl: ^1.6.1
+  yargs-parser: ^18.1.2
