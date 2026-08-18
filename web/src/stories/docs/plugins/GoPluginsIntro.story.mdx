@@ -13,7 +13,7 @@ import { Meta } from '@storybook/addon-docs';
 
 ## Build an example plugin
 
-Octant ships with an [example plugin](https://github.com/vmware-tanzu/octant/blob/master/cmd/octant-sample-plugin/main.go).
+OctantR ships with an [example plugin](https://github.com/m8yng/octant/blob/main/cmd/octant-sample-plugin/main.go).
 
 Install the plugin using:
 
@@ -99,7 +99,7 @@ handlers := service.HandlerFuncs{
 
 ### Handling Actions
 In Octant you can create custom action handlers that you can trigger from button actions in the UI. There are also
-built-in actions which are triggered from internal Octant events, those are defined in [octant/pkg/action/actions.go](https://github.com/vmware-tanzu/octant/blob/master/pkg/action/actions.go).
+built-in actions which are triggered from internal Octant events, those are defined in [octant/pkg/action/actions.go](https://github.com/m8yng/octant/blob/main/pkg/action/actions.go).
 
 Here is an example of setting up your plugin to know when the current namespace has changed.
 
@@ -123,7 +123,7 @@ Here is an example of setting up your plugin to know when the current namespace 
 ```
 
 Besides having custom actions, there are pre-existing octant actions which are registered by octant internal modules and they can be leveraged to perform an action.
-For example: `action.octant.dev/apply` (https://github.com/vmware-tanzu/octant/blob/master/pkg/action/actions.go) can be used to apply a yaml configuration for a resource.
+For example: `action.octant.dev/apply` (https://github.com/m8yng/octant/blob/main/pkg/action/actions.go) can be used to apply a yaml configuration for a resource.
 
 Example Payload:
 ```

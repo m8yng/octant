@@ -39,9 +39,9 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at [oss-coc@vmware.com](mailto:oss-coc@vmware.com). All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior should be reported privately to the [repository owner](https://github.com/m8yng). If the report concerns the repository owner, use [GitHub's abuse reporting](https://support.github.com/contact/report-abuse). Do not publish sensitive report details in an issue.
 
-All community leaders are obligated to respect the privacy and security of the reporter of any incident.
+Project maintainers will respect the privacy and security of reporters.
 
 ## Enforcement Guidelines
 

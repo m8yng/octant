@@ -21,11 +21,11 @@ nfpms:
     formats:
       - deb
       - rpm
-    vendor: "VMware"
-    homepage: "https://github.com/vmware-tanzu/octant"
-    maintainer: Octant Maintainers <project-octant@googlegroups.com>
-    description: "A highly extensible platform for developers to better understand the complexity of Kubernetes clusters"
-    license: "Apache 2.0"
+    vendor: "OctantR contributors"
+    homepage: "https://github.com/m8yng/octant"
+    maintainer: "m8yng"
+    description: "An independent community revival of the Octant Kubernetes dashboard"
+    license: "MIT and Apache-2.0"
     file_name_template: "{{.ProjectName}}_{{.Date}}_{{.Os}}-{{.Arch}}"
     replacements:
       darwin: macOS
@@ -47,6 +47,8 @@ archives:
       amd64: 64bit
     files:
       - LICENSE
+      - LICENSE-APACHE-2.0
+      - NOTICE
       - README.md
 
 snapshot:

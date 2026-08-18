@@ -1,17 +1,13 @@
-# Website for [Template]
+# OctantR website sources
 
-##### Prerequisites
+This directory contains the inherited Octant website and historical posts. Historical posts are retained as upstream records and may contain obsolete links, release information, and community details.
 
-* [Hugo](https://github.com/gohugoio/hugo)
-    * macOS: `brew install hugo`
-    * Windows: `choco install hugo-extended -confirm`
+The current project documentation is in the repository root. The website is not currently published.
 
-#### Build
+To preview it locally with Hugo:
 
-```bash
+```sh
 hugo server --disableFastRender
 ```
 
-#### Serve
-
-Serve site at http://localhost:1313
+Open <http://localhost:1313>.

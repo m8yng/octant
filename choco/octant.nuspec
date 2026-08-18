@@ -12,7 +12,7 @@
     <!-- TODO:
     <iconUrl></iconUrl>
     -->
-    <licenseUrl>https://github.com/vmware-tanzu/octant/blob/master/LICENSE</licenseUrl>
+    <licenseUrl>https://github.com/m8yng/octant/blob/main/LICENSE-APACHE-2.0</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/vmware-tanzu/octant</projectSourceUrl>
     <docsUrl>https://octant.dev/docs</docsUrl>

@@ -1,6 +1,13 @@
-Octant
-Copyright (c) 2019 the Octant contributors. All Rights Reserved. 
+Octant-Revibe (OctantR)
+Modifications Copyright (c) 2026 m8yng and OctantR contributors.
 
-This product is licensed to you under the Apache 2.0 license (the "License").  You may not use this product except in compliance with the Apache 2.0 License.  
+Based on Octant:
+Copyright (c) 2019 the Octant contributors. All Rights Reserved.
 
-This product may include a number of subcomponents with separate copyright notices and license terms. Your use of these subcomponents is subject to the terms and conditions of the subcomponent's license, as noted in the LICENSE file. 
+OctantR is an independent community fork of the archived Octant project. It is not affiliated with or endorsed by VMware or Broadcom. The upstream name is used only to identify the origin of the work.
+
+Code inherited from upstream Octant remains licensed under the Apache License, Version 2.0; see LICENSE-APACHE-2.0.
+
+Original OctantR contributions beginning with commit 8024ecda are licensed under the MIT License; see LICENSE. A combined distribution remains subject to the Apache License obligations applicable to inherited code.
+
+This product may include subcomponents with separate copyright notices and license terms. Use of those subcomponents is subject to their applicable licenses.

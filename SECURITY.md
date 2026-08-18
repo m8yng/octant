@@ -1,18 +1,13 @@
 # Security Policy
 
-## Reporting a Vulnerability
+OctantR is an early community revival and does not yet publish supported release or Kubernetes version ranges.
 
-How to Report a Vulnerability
-VMware encourages users who become aware of a security vulnerability in VMware products to contact VMware with details of the vulnerability. VMware has established an email address that should be used for reporting a vulnerability. Please send descriptions of any vulnerabilities found to security@vmware.com. Please include details on the software and hardware configuration of your system so that we can duplicate the issue being reported.
+## Reporting a vulnerability
 
- 
+Do not report vulnerabilities to VMware or Broadcom; they do not maintain this fork.
 
-Note: We encourage use of encrypted email. Our public PGP key is found at https://kb.vmware.com/kb/1055.
+Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/m8yng/octant/security/advisories/new). Include reproduction steps, affected versions or commits, impact, and any suggested mitigation.
 
- 
+If private reporting is unavailable, contact the repository owner through [GitHub](https://github.com/m8yng) without publishing exploit details.
 
-VMware hopes that users encountering a new vulnerability will contact us privately as it is in the best interests of our customers that VMware has an opportunity to investigate and confirm a suspected vulnerability before it becomes public knowledge.
-
- 
-
-In the case of vulnerabilities found in third-party software components used in VMware products, please also notify VMware as described above.
+There is currently no guaranteed response or remediation timeline.
