@@ -28,22 +28,6 @@ jobs:
         with:
           name: bundle
           path: web/dist
-      - name: Build electron binary
-        env:
-          GOFLAGS: -mod=vendor
-        run: |
-          go run build.go build-electron
-      - name: Build electron
-        uses: samuelmeuli/action-electron-builder@v1.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          package_root: 'web'
-          build_script_name: 'build-electron'
-      - uses: google-github-actions/upload-cloud-storage@main
-        with:
-          credentials: ${{ secrets.GOOGLE_APP_JSON }}
-          path: web/release
-          destination: octant-nightlies/electron
 
   push:
     name: Run goreleaser

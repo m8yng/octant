@@ -19,12 +19,6 @@ rice-box.go
 /dist
 /node_modules
 
-# electron bundling
-/output
-/cmd/octant-electron/output
-/cmd/octant-electron/bind*.go
-/cmd/octant-electron/windows.syso
-
 .vscode
 .idea
 

@@ -226,8 +226,6 @@
     "src//app/modules/shared/services/view/view.service.ts",
     "src//app/modules/shared/services/icon/icon.service.ts",
     "src//app/modules/shared/services/icon/icon.service.spec.ts",
-    "src//app/modules/shared/services/electron/electron.service.ts",
-    "src//app/modules/shared/services/electron/electron.service.spec.ts",
     "src//app/modules/shared/services/helper/helper.service.ts",
     "src//main.ts",
     "src//environments/environment.prod.ts",

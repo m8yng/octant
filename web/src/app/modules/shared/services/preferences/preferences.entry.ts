@@ -15,8 +15,7 @@ export class PreferencesEntry<T> {
     private preferencesService: PreferencesService,
     public id: string,
     private defaultValue: T,
-    private defaultText: string,
-    public updatesElectron: boolean = false
+    private defaultText: string
   ) {
     if (typeof this.defaultValue !== 'string') {
       this.subject = new BehaviorSubject<T>(

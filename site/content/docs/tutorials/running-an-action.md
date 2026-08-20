@@ -21,7 +21,7 @@ containing data relevant to that particular Action.
 ```
 
 The above websocket message is an example of how Octant uses Actions to serve content for a given page. When a user
-navigates to a URL path, it is sent from the client, electron or web browser, where the server will send a response
+navigates to a URL path, it is sent from the web browser, where the server will send a response
 based on the requested content path.
 
 ```json

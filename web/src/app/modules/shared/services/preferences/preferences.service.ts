@@ -5,11 +5,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import {
-  Operation,
-  PreferencePanel,
-  Preferences,
-} from '../../models/preference';
+import { PreferencePanel, Preferences } from '../../models/preference';
 import { ThemeService } from '../theme/theme.service';
 import { PreferencesEntry } from './preferences.entry';
 
@@ -17,7 +13,6 @@ import { PreferencesEntry } from './preferences.entry';
   providedIn: 'root',
 })
 export class PreferencesService implements OnDestroy {
-  private electronStore: any;
   private kubeConfigPathText: string;
   private kubeConfigFullPath: string;
 
@@ -26,11 +21,6 @@ export class PreferencesService implements OnDestroy {
     new BehaviorSubject<boolean>(false);
 
   constructor(private themeService: ThemeService) {
-    if (this.isElectron()) {
-      const Store = window.require('electron-store');
-      this.electronStore = new Store();
-    }
-
     this.preferences.set(
       'navigation.collapsed',
       new PreferencesEntry<boolean>(
@@ -49,33 +39,6 @@ export class PreferencesService implements OnDestroy {
     this.preferences.set(
       'general.pageSize',
       new PreferencesEntry<number>(this, 'general.pageSize', 10, '')
-    );
-
-    this.preferences.set(
-      'development.frontendUrl',
-      new PreferencesEntry<string>(
-        this,
-        'development.frontendUrl',
-        'http://localhost:4200',
-        '',
-        true
-      )
-    );
-
-    this.preferences.set(
-      'development.embedded',
-      new PreferencesEntry<boolean>(
-        this,
-        'development.embedded',
-        true,
-        'embedded',
-        true
-      )
-    );
-
-    this.preferences.set(
-      'development.verbose',
-      new PreferencesEntry<boolean>(this, 'development.verbose', false, 'debug')
     );
 
     this.preferences.set(
@@ -98,60 +61,24 @@ export class PreferencesService implements OnDestroy {
   }
 
   setStoredValue(key: string, value: any) {
-    if (this.isElectron()) {
-      this.electronStore.set(key, value);
-    } else {
-      localStorage.setItem(key, value);
-    }
+    localStorage.setItem(key, value);
   }
 
   getStoredValue(key: string, defaultValue: any) {
-    if (this.isElectron()) {
-      return this.electronStore.get(key, defaultValue);
-    } else {
-      return localStorage.getItem(key) || defaultValue;
-    }
-  }
-
-  isElectron(): boolean {
-    if (typeof process === 'undefined') {
-      return false;
-    }
-    return (
-      process && process.versions && process.versions.electron !== undefined
-    );
+    return localStorage.getItem(key) || defaultValue;
   }
 
   public preferencesChanged(update: Preferences) {
-    let notificationRequired = false;
-
     for (const pref of this.preferences.values()) {
-      const changed = pref.preferencesChanged(update);
-      if (changed && pref.updatesElectron) {
-        notificationRequired = true;
-      }
+      pref.preferencesChanged(update);
     }
-
     this.updateTheme();
-
-    if (this.isElectron() && notificationRequired) {
-      const ipcRenderer = window.require('electron').ipcRenderer;
-      ipcRenderer.send('preferences', 'changed');
-    }
   }
 
   public getPreferences(): Preferences {
-    const panels: PreferencePanel[] = this.isElectron()
-      ? [
-          this.getGeneralPanels(),
-          this.getNavigationPanels(),
-          this.getDeveloperPanels(),
-        ]
-      : [this.getGeneralPanels(), this.getNavigationPanels()];
-
     return {
       updateName: 'generalPreferences',
-      panels,
+      panels: [this.getGeneralPanels(), this.getNavigationPanels()],
     };
   }
 
@@ -180,79 +107,6 @@ export class PreferencesService implements OnDestroy {
       pref.setDefaultValue();
     }
     this.updateTheme();
-  }
-
-  private getDeveloperPanels(): PreferencePanel {
-    return {
-      name: 'Development',
-      sections: [
-        {
-          name: 'Frontend Source',
-          elements: [
-            {
-              name: 'development.embedded',
-              type: 'radio',
-              value: this.preferences.get('development.embedded').subject.value
-                ? 'embedded'
-                : 'proxied',
-              config: {
-                values: [
-                  {
-                    label: 'Embedded',
-                    value: 'embedded',
-                  },
-                  {
-                    label: 'Proxied',
-                    value: 'proxied',
-                  },
-                ],
-              },
-            },
-            {
-              name: 'development.frontendUrl',
-              type: 'input',
-              value: this.preferences.get('development.frontendUrl').subject
-                .value,
-              disableConditions: [
-                {
-                  lhs: 'development.embedded',
-                  op: Operation.Equal,
-                  rhs: 'proxied',
-                },
-              ],
-              config: {
-                label: 'Frontend Proxy Url',
-                placeholder: 'http://example.com',
-              },
-            },
-          ],
-        },
-        {
-          name: 'Logging verbosity (requires restart)',
-          elements: [
-            {
-              name: 'development.verbose',
-              type: 'radio',
-              value: this.preferences.get('development.verbose').subject.value
-                ? 'debug'
-                : 'normal',
-              config: {
-                values: [
-                  {
-                    label: 'Debug',
-                    value: 'debug',
-                  },
-                  {
-                    label: 'Normal',
-                    value: 'normal',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    };
   }
 
   private getGeneralPanels(): PreferencePanel {

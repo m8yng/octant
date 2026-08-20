@@ -16,7 +16,6 @@
     "../projects/**/*"
   ],
   "files": [
-    "./typings.d.ts",
-    "../node_modules/electron/electron.d.ts"
+    "./typings.d.ts"
   ]
 }

@@ -2,7 +2,6 @@ allowBuilds:
   '@angular/cli': true
   core-js: true
   core-js-pure: true
-  electron: true
   esbuild: true
   fsevents: false
   nice-napi: true

@@ -14,12 +14,10 @@ import {
 import { AbstractViewComponent } from '../../abstract-view/abstract-view.component';
 import { SelectFileView } from '../../../models/content';
 import { ActionService } from '../../../services/action/action.service';
-import { ElectronService } from '../../../services/electron/electron.service';
 
 type File = {
   name: string;
   type: string;
-  path?: string;
   lastModified: number;
   size: number;
 };
@@ -42,10 +40,7 @@ export class SelectFileComponent
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() fileChanged: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(
-    private actionService: ActionService,
-    private electronService: ElectronService
-  ) {
+  constructor(private actionService: ActionService) {
     super();
   }
 
@@ -71,16 +66,13 @@ export class SelectFileComponent
       }
       for (let i = 0; i < files.length; i++) {
         const file = files.item(i);
-        let fileMetadata = {
+        const fileMetadata = {
           name: file.name,
           type: file.type,
           lastModified: file.lastModified,
           size: file.size,
         };
 
-        if (this.electronService.isElectron()) {
-          fileMetadata = { ...fileMetadata, ...{ path: file.path } };
-        }
         fileList.push(fileMetadata);
       }
 

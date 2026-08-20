@@ -19,7 +19,6 @@ import {
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { WindowToken } from '../../../window';
-import { ElectronService } from 'src/app/modules/shared/services/electron/electron.service';
 
 interface WebsocketPayload {
   type: string;
@@ -57,7 +56,6 @@ export class WebsocketService implements BackendService {
   private router: Router;
 
   constructor(
-    private electronService: ElectronService,
     notifierService: NotifierService,
     router: Router,
     @Inject(WindowToken) private window: Window
@@ -203,11 +201,6 @@ export class WebsocketService implements BackendService {
   }
 
   websocketURI(): string {
-    if (this.electronService.isElectron()) {
-      const port = this.electronService.port();
-      return 'ws://localhost:' + port + '/api/v1/stream';
-    }
-
     const loc = this.window.location;
     let newURI = 'ws:';
     if (loc.protocol === 'https:') {

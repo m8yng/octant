@@ -1,5 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
-import { ElectronService } from '../../../modules/shared/services/electron/electron.service';
+import { Component, OnInit } from '@angular/core';
 import { ThemeService } from '../../../modules/shared/services/theme/theme.service';
 
 @Component({
@@ -8,21 +7,9 @@ import { ThemeService } from '../../../modules/shared/services/theme/theme.servi
   styleUrls: ['./home.component.sass'],
 })
 export class HomeComponent implements OnInit {
-  constructor(
-    private renderer: Renderer2,
-    private themeService: ThemeService,
-    private electronService: ElectronService
-  ) {}
+  constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
     this.themeService.loadTheme();
-
-    if (this.electronService.isElectron()) {
-      this.renderer.addClass(document.body, 'electron');
-      this.renderer.addClass(
-        document.body,
-        `platform-${this.electronService.platform()}`
-      );
-    }
   }
 }

@@ -10,9 +10,3 @@ web/rice-box.go
 choco
 ci
 configs
-
-# electron bundling
-/vendor/astilectron*
-/vendor/electron*
-/vendor/status.json
-/output

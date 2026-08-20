@@ -9,8 +9,7 @@
   },
   "files": [
     "test.ts",
-    "polyfills.ts",
-    "../node_modules/electron/electron.d.ts"
+    "polyfills.ts"
   ],
   "include": [
     "**/*.spec.ts",

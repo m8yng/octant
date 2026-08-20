@@ -5,12 +5,11 @@
     "typeRoots": [
       "./types"
     ],
-    "lib": ["es5", "es6", "dom"]
+    "lib": ["es2018", "dom"]
   },
   "files": [
     "main.ts",
-    "polyfills.ts",
-    "../node_modules/electron/electron.d.ts"
+    "polyfills.ts"
   ],
   "exclude": [
     "**/*.stories.ts"
