@@ -178,7 +178,7 @@ func genViewForCRDVersion(
 		return printErrorCard(crd.GetName(), crd.GetAPIVersion(), err)
 	}
 
-	lister := NewCustomResourceLister()
+	lister := NewCustomResourceLister(CustomResourceListAllNamespaces(IsAllNamespaces(ctx)))
 	return lister.List(crd, customResources, version, options.Link)
 }
 

@@ -31,7 +31,11 @@ func GenerateBreadcrumb(cm *ContentManager, contentPath string, state octant.Sta
 	var title []component.TitleComponent
 	crPath := "custom-resources"
 
-	navs, err := cm.moduleManager.Navigation(cm.ctx, state.GetNamespace(), m.Name())
+	navigationNamespace := state.GetNamespace()
+	if m.Name() == "overview" && strings.HasPrefix(contentPath, "overview/all-namespaces") {
+		navigationNamespace = octant.AllNamespaces
+	}
+	navs, err := cm.moduleManager.Navigation(cm.ctx, navigationNamespace, m.Name())
 	if err != nil {
 		return title
 	}

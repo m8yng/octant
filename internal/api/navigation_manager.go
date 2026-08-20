@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/vmware-tanzu/octant/internal/util/json"
@@ -144,7 +145,11 @@ func NavigationGenerator(ctx context.Context, state octant.State, config Navigat
 		m := modules[i]
 		g.Go(func() error {
 			contentPath := m.ContentPath()
-			navList, err := m.Navigation(ctx, namespace, contentPath)
+			moduleNamespace := namespace
+			if m.Name() == "overview" && strings.HasPrefix(state.GetContentPath(), "overview/all-namespaces") {
+				moduleNamespace = octant.AllNamespaces
+			}
+			navList, err := m.Navigation(ctx, moduleNamespace, contentPath)
 			if err != nil {
 				return fmt.Errorf("unable to generate navigation for module %s: %v", m.Name(), err)
 			}

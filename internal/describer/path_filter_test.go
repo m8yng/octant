@@ -32,6 +32,12 @@ func TestPathFilter_Match(t *testing.T) {
 			isMatch:     true,
 		},
 		{
+			name:        "all namespaces",
+			filterPath:  "/foo/bar",
+			contentPath: "/all-namespaces/foo/bar",
+			isMatch:     true,
+		},
+		{
 			name:        "case 4",
 			filterPath:  "/workloads/cron-jobs/(?P<name>^[^.]+)",
 			contentPath: "/workloads/cron-jobs",
@@ -73,8 +79,9 @@ func TestPathFilter_Fields(t *testing.T) {
 			filterPath:  `/workloads/cron-jobs/(?P<name>.*?)`,
 			contentPath: "/workloads/cron-jobs/name",
 			expected: map[string]string{
-				"name":      "name",
-				"namespace": "",
+				"allNamespaces": "",
+				"name":          "name",
+				"namespace":     "",
 			},
 		},
 		{
@@ -82,8 +89,19 @@ func TestPathFilter_Fields(t *testing.T) {
 			filterPath:  `/workloads/cron-jobs/(?P<name>.*?)`,
 			contentPath: "/namespace/default/workloads/cron-jobs/name",
 			expected: map[string]string{
-				"name":      "name",
-				"namespace": "default",
+				"allNamespaces": "",
+				"name":          "name",
+				"namespace":     "default",
+			},
+		},
+		{
+			name:        "path with all namespaces",
+			filterPath:  `/workloads/cron-jobs/(?P<name>.*?)`,
+			contentPath: "/all-namespaces/workloads/cron-jobs/name",
+			expected: map[string]string{
+				"allNamespaces": "all-namespaces",
+				"name":          "name",
+				"namespace":     "",
 			},
 		},
 	}

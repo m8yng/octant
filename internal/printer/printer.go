@@ -81,6 +81,9 @@ func (p *Resource) Print(ctx context.Context, object runtime.Object) (component.
 		}
 
 		viewComponent := results[0].Interface().(component.Component)
+		if table, ok := viewComponent.(*component.Table); ok && IsAllNamespaces(ctx) {
+			addNamespaceColumn(table)
+		}
 		return viewComponent, nil
 	}
 
@@ -105,12 +108,24 @@ func (p *Resource) Handler(printFunc interface{}) error {
 	return nil
 }
 
+func addNamespaceColumn(table *component.Table) {
+	for _, col := range table.Columns() {
+		if col.Name == "Namespace" {
+			return
+		}
+	}
+	table.AddColumn("Namespace")
+}
+
 // ValidatePrintHandlerFunc validates print handler signature.
 // printFunc is the function that will be called to print an object.
 // printFunc must be of the following type:
-//   func printFunc(ctx context.Context, object ObjectType, options Options) (component.Component, error)
+//
+//	func printFunc(ctx context.Context, object ObjectType, options Options) (component.Component, error)
+//
 // where:
-//   ObjectType is the type of object that will be printed
+//
+//	ObjectType is the type of object that will be printed
 func ValidatePrintHandlerFunc(printFunc reflect.Value) error {
 	if printFunc.Kind() != reflect.Func {
 		return errors.Errorf("invalid print handler. %#v is not a function", printFunc)
@@ -140,7 +155,7 @@ func ValidatePrintHandlerFunc(printFunc reflect.Value) error {
 // DefaultPrintFunc is a default object printer. It prints Kubernetes resource
 // lists with three columns: name, labels, age. Returns nil if the object
 // should not be printed.
-func DefaultPrintFunc(_ context.Context, object runtime.Object, _ Options) (component.Component, error) {
+func DefaultPrintFunc(ctx context.Context, object runtime.Object, _ Options) (component.Component, error) {
 	if object == nil {
 		return nil, errors.New("unable to print nil objects")
 	}
@@ -161,6 +176,9 @@ func DefaultPrintFunc(_ context.Context, object runtime.Object, _ Options) (comp
 	}
 
 	cols := component.NewTableCols("Name", "Labels", "Age")
+	if IsAllNamespaces(ctx) {
+		cols = append(component.NewTableCols("Namespace"), cols...)
+	}
 
 	title := strings.TrimPrefix(fmt.Sprintf("%T", object), "*")
 	desc := strings.Split(title, ".")
@@ -187,6 +205,9 @@ func DefaultPrintFunc(_ context.Context, object runtime.Object, _ Options) (comp
 			"Name":   name,
 			"Labels": labels,
 			"Age":    age,
+		}
+		if IsAllNamespaces(ctx) {
+			row["Namespace"] = component.NewText(u.GetNamespace())
 		}
 
 		table.Add(row)

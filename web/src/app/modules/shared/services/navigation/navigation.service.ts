@@ -255,7 +255,15 @@ export class NavigationService {
         break;
       }
       case 'overview': {
-        if (paths.length > 6) {
+        if (paths[2] === 'all-namespaces') {
+          routerLink = [
+            '',
+            'overview',
+            'namespace',
+            namespace,
+            ...paths.slice(3),
+          ].join('/');
+        } else if (paths.length > 6) {
           routerLink = '/overview/namespace/' + namespace;
         } else {
           paths[3] = namespace;
@@ -268,5 +276,22 @@ export class NavigationService {
       }
     }
     return routerLink;
+  }
+
+  redirectAllNamespaces(): string {
+    const paths = this.activeUrl.value.split('/');
+    if (paths[1] !== 'overview') {
+      return this.activeUrl.value;
+    }
+    if (paths[2] === 'all-namespaces') {
+      return this.activeUrl.value;
+    }
+    let resourcePath = paths.slice(4);
+    if (resourcePath[0] === 'custom-resources' && resourcePath.length > 2) {
+      resourcePath = resourcePath.slice(0, 2);
+    } else if (paths.length > 6) {
+      resourcePath = resourcePath.slice(0, -1);
+    }
+    return ['', 'overview', 'all-namespaces', ...resourcePath].join('/');
   }
 }

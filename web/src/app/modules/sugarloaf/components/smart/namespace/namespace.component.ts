@@ -80,9 +80,26 @@ export class NamespaceComponent implements OnInit, OnDestroy {
     }
   }
 
-  namespaceClass(namespace: string) {
-    const active = this.currentNamespace === namespace ? ['active'] : [];
-    return ['context-button', ...active];
+  namespaceClass(namespace: string, allNamespaces = false) {
+    const active = allNamespaces
+      ? this.isAllNamespaces()
+      : !this.isAllNamespaces() && this.currentNamespace === namespace;
+    return ['context-button', ...(active ? ['active'] : [])];
+  }
+
+  namespaceLabel(): string {
+    return this.isAllNamespaces() ? 'All Namespaces' : this.currentNamespace;
+  }
+
+  supportsAllNamespaces(): boolean {
+    return (
+      !!this.selectedItem &&
+      this.modules[this.selectedItem.module]?.name === 'overview'
+    );
+  }
+
+  allNamespacesPath(): string {
+    return this.navigationService.redirectAllNamespaces();
   }
 
   selectNamespace(namespace: string) {
@@ -101,6 +118,10 @@ export class NamespaceComponent implements OnInit, OnDestroy {
       this.nsLimit === this.namespaces.length
         ? this.defaultNsLimit
         : this.namespaces.length;
+  }
+
+  private isAllNamespaces(): boolean {
+    return this.activeUrl?.startsWith('/overview/all-namespaces');
   }
 
   private routerLinkPath(namespace: string): string {

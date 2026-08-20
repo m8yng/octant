@@ -42,7 +42,9 @@ type NavigationFactory struct {
 // NewNavigationFactory creates an instance of NewNavigationFactory.
 func NewNavigationFactory(namespace string, root string, objectStore store.Store, entries NavigationEntries) *NavigationFactory {
 	var rootPath = root
-	if namespace != "" {
+	if namespace == AllNamespaces {
+		rootPath = path.Join(root, "all-namespaces")
+	} else if namespace != "" {
 		rootPath = path_util.NamespacedPath(root, namespace, "")
 	}
 	if !strings.HasSuffix(rootPath, "/") {
@@ -112,7 +114,11 @@ func (nf *NavigationFactory) genNode(ctx context.Context, name string, childFn E
 	}
 
 	if childFn != nil {
-		children, loading, err := childFn(ctx, node.Path, nf.namespace, nf.objectStore, wantsClusterScoped)
+		namespace := nf.namespace
+		if namespace == AllNamespaces {
+			namespace = ""
+		}
+		children, loading, err := childFn(ctx, node.Path, namespace, nf.objectStore, wantsClusterScoped)
 		if err != nil {
 			return nil, err
 		}

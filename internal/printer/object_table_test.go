@@ -23,6 +23,36 @@ import (
 	"github.com/vmware-tanzu/octant/pkg/view/component"
 )
 
+func TestAddNamespaceColumn(t *testing.T) {
+	table := component.NewTable("table", "placeholder", component.NewTableCols("Name"))
+
+	addNamespaceColumn(table)
+	addNamespaceColumn(table)
+
+	require.Equal(t, component.NewTableCols("Name", "Namespace"), table.Columns())
+}
+
+func TestObjectTableAllNamespaces(t *testing.T) {
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	pod := testutil.CreatePod("pod1")
+	pod.Namespace = "production"
+	objectStore := fake.NewMockStore(controller)
+	ot := NewObjectTable("table", "placeholder", component.NewTableCols("Name", "Age"), objectStore)
+
+	err := ot.AddRowForObject(WithAllNamespaces(context.Background()), pod, component.TableRow{
+		"Name": component.NewText(pod.Name),
+		"Age":  component.NewText("1m"),
+	})
+	require.NoError(t, err)
+
+	table, err := ot.ToComponent()
+	require.NoError(t, err)
+	require.Equal(t, component.NewTableCols("Name", "Namespace", "Age"), table.(*component.Table).Columns())
+	require.Equal(t, component.NewText("production"), table.(*component.Table).Rows()[0]["Namespace"])
+}
+
 func TestObjectTable(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()

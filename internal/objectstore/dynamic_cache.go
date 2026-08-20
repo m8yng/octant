@@ -458,6 +458,11 @@ func (d *DynamicCache) listerForResource(ctx context.Context, key store.Key) (li
 		return nil, oerrors.NewAccessError(key, "List", err)
 	}
 
+	if key.Namespace == "" && !d.CheckResourceAccess(ctx, gvr) {
+		err = fmt.Errorf("cluster-wide list access denied for %s", gvr)
+		return nil, oerrors.NewAccessError(key, "List", err)
+	}
+
 	ii := d.forResource(ctx, gvr, key.Namespace, nil)
 
 	var l lister

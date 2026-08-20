@@ -58,6 +58,29 @@ func TestNavigationGenerator(t *testing.T) {
 		expected []navigation.Navigation
 	}{
 		{
+			name: "all namespaces overview",
+			setup: func(controller *gomock.Controller) (*configFake.MockDash, *octantFake.MockState) {
+				m := moduleFake.NewMockModule(controller)
+				m.EXPECT().ContentPath().Return("overview")
+				m.EXPECT().Name().Return("overview").AnyTimes()
+				m.EXPECT().Description().Return("description").AnyTimes()
+				m.EXPECT().Navigation(gomock.Any(), octant.AllNamespaces, "overview").Return([]navigation.Navigation{{Title: "Overview"}}, nil)
+
+				moduleManager := moduleFake.NewMockManagerInterface(controller)
+				moduleManager.EXPECT().Modules().Return([]module.Module{m})
+
+				dashConfig := configFake.NewMockDash(controller)
+				dashConfig.EXPECT().ModuleManager().Return(moduleManager)
+
+				state := octantFake.NewMockState(controller)
+				state.EXPECT().GetNamespace().Return("default")
+				state.EXPECT().GetContentPath().Return("overview/all-namespaces/workloads/pods").AnyTimes()
+
+				return dashConfig, state
+			},
+			expected: []navigation.Navigation{{Title: "Overview", Module: "overview", Description: "description"}},
+		},
+		{
 			name: "in general",
 			setup: func(controller *gomock.Controller) (*configFake.MockDash, *octantFake.MockState) {
 				m := moduleFake.NewMockModule(controller)
@@ -78,6 +101,7 @@ func TestNavigationGenerator(t *testing.T) {
 
 				state := octantFake.NewMockState(controller)
 				state.EXPECT().GetNamespace().Return("default")
+				state.EXPECT().GetContentPath().Return("module/namespace/default").AnyTimes()
 
 				return dashConfig, state
 			},

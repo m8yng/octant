@@ -185,6 +185,11 @@ describe('NavigationService', () => {
         namespace: 'test',
         result: '/overview/namespace/test',
       },
+      {
+        url: '/overview/all-namespaces/workloads/pods',
+        namespace: 'test',
+        result: '/overview/namespace/test/workloads/pods',
+      },
     ];
 
     routerLinkCases.forEach((test, index) => {
@@ -194,6 +199,31 @@ describe('NavigationService', () => {
           svc.activeUrl = new BehaviorSubject<string>(test.url);
           const result = svc.redirect(test.namespace);
           expect(test.result).toEqual(result);
+        }
+      ));
+    });
+
+    const allNamespacesCases = [
+      {
+        url: '/overview/namespace/default/workloads/pods',
+        result: '/overview/all-namespaces/workloads/pods',
+      },
+      {
+        url: '/overview/namespace/default/workloads/pods/nginx',
+        result: '/overview/all-namespaces/workloads/pods',
+      },
+      {
+        url: '/overview/namespace/default/custom-resources/widgets.example.io/v1/widget',
+        result: '/overview/all-namespaces/custom-resources/widgets.example.io',
+      },
+    ];
+
+    allNamespacesCases.forEach(test => {
+      it(`generates an all namespaces route from ${test.url}`, inject(
+        [NavigationService],
+        (svc: NavigationService) => {
+          svc.activeUrl.next(test.url);
+          expect(svc.redirectAllNamespaces()).toEqual(test.result);
         }
       ));
     });

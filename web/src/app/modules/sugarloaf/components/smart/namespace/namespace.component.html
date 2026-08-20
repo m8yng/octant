@@ -3,7 +3,7 @@
     <clr-dropdown class="dropdown-top" [clrCloseMenuOnItemClick]="false">
       <button type="button" class="dropdown-button" clrDropdownTrigger>
         <clr-icon shape="namespace"></clr-icon>
-        {{ currentNamespace }}
+        {{ namespaceLabel() }}
         <clr-icon shape="caret down"></clr-icon>
       </button>
       <clr-dropdown-menu
@@ -12,6 +12,16 @@
         [clrPosition]="'bottom-right'"
       >
         <label class="dropdown-header">Namespaces</label>
+        <button
+          *ngIf="supportsAllNamespaces()"
+          type="button"
+          class="dropdown-button ns-menu-item"
+          [ngClass]="namespaceClass('', true)"
+          clrDropdownItem
+          [routerLink]="allNamespacesPath()"
+        >
+          All Namespaces
+        </button>
         <ng-container
           *ngFor="let namespace of namespaces | slice : 0 : nsLimit; trackBy: trackByIdentity"
         >
@@ -32,6 +42,6 @@
   </ng-template>
   <ng-template #hideDropdown>
     <clr-icon shape="namespace"></clr-icon>
-    [All Namespaces]
+    [Cluster Scoped]
   </ng-template>
 </div>

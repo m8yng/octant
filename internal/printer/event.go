@@ -34,6 +34,9 @@ func EventListHandler(ctx context.Context, list *corev1.EventList, opts Options)
 
 	cols := component.NewTableCols("Kind", "Message", "Reason", "Type",
 		"First Seen", "Last Seen")
+	if IsAllNamespaces(ctx) {
+		cols = append(component.NewTableCols("Namespace"), cols...)
+	}
 	table := component.NewTable("Events", "We couldn't find any events!", cols)
 
 	for _, event := range list.Items {
@@ -52,6 +55,9 @@ func EventListHandler(ctx context.Context, list *corev1.EventList, opts Options)
 		}
 
 		row["Kind"] = kind
+		if IsAllNamespaces(ctx) {
+			row["Namespace"] = component.NewText(event.Namespace)
+		}
 
 		messageLink, err := opts.Link.ForObject(&event, event.Message)
 		if err != nil {

@@ -97,9 +97,9 @@ func (g *Generator) Generate(ctx context.Context, contentPath string, opts Optio
 	loaderFactory := describer.NewObjectLoaderFactory(g.dashConfig)
 
 	fields := pf.Fields(contentPath)
-	namespace := ""
-	if n, ok := fields["namespace"]; ok {
-		namespace = n
+	namespace := fields["namespace"]
+	if fields["allNamespaces"] != "" {
+		ctx = printer.WithAllNamespaces(ctx)
 	}
 
 	options := describer.Options{

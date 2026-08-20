@@ -27,7 +27,7 @@ func NewPathFilter(filterPath string, describer Describer) *PathFilter {
 	if filterPath == "/" {
 		filterPath += "?"
 	}
-	re := regexp.MustCompile(fmt.Sprintf(`^(/namespace/(?P<namespace>[^/]+))?%s$`, filterPath))
+	re := regexp.MustCompile(fmt.Sprintf(`^((/namespace/(?P<namespace>[^/]+))|/(?P<allNamespaces>all-namespaces))?%s$`, filterPath))
 	return &PathFilter{
 		re:         re,
 		filterPath: filterPath,
@@ -42,10 +42,11 @@ func (pf *PathFilter) String() string {
 // Match matches a contentPath against the filter.
 //
 // content paths look like:
-//   /foo/bar
-//   /namespace/default
-//   /namespace/default/foo/bar
-//   /
+//
+//	/foo/bar
+//	/namespace/default
+//	/namespace/default/foo/bar
+//	/
 func (pf *PathFilter) Match(contentPath string) bool {
 	return pf.re.MatchString(contentPath)
 }

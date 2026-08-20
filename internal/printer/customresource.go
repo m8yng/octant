@@ -32,9 +32,16 @@ func CustomResourceListAllVersions(tf bool) CustomResourceListerOption {
 	}
 }
 
+func CustomResourceListAllNamespaces(allNamespaces bool) CustomResourceListerOption {
+	return func(lister *CustomResourceLister) {
+		lister.allNamespaces = allNamespaces
+	}
+}
+
 // CustomResourceLister lists custom resources.
 type CustomResourceLister struct {
 	showAllVersions bool
+	allNamespaces   bool
 }
 
 // NewCustomResourceLister creates a CustomResourceLister instance.
@@ -56,7 +63,11 @@ func (crl *CustomResourceLister) List(crdObject *unstructured.Unstructured, reso
 
 	tableName := fmt.Sprintf("%s/%s", crdObject.GetName(), version)
 	placeholder := fmt.Sprintf("We could not find any %s!", tableName)
-	table := component.NewTable(tableName, placeholder, component.NewTableCols("Name", "Labels"))
+	cols := component.NewTableCols("Name", "Labels")
+	if crl.allNamespaces {
+		cols = component.NewTableCols("Name", "Namespace", "Labels")
+	}
+	table := component.NewTable(tableName, placeholder, cols)
 
 	crd, err := octant.NewCustomResourceDefinitionTool(crdObject)
 	if err != nil {
@@ -106,6 +117,9 @@ func (crl *CustomResourceLister) List(crdObject *unstructured.Unstructured, reso
 		}
 
 		row["Name"] = name
+		if crl.allNamespaces {
+			row["Namespace"] = component.NewText(cr.GetNamespace())
+		}
 		row["Labels"] = component.NewLabels(cr.GetLabels())
 		row["Age"] = component.NewTimestamp(cr.GetCreationTimestamp().Time)
 

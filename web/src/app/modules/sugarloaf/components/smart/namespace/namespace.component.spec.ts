@@ -35,4 +35,11 @@ describe('NamespaceComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('shows all namespaces for an all-namespaces route', () => {
+    component.activeUrl = '/overview/all-namespaces/workloads/pods';
+
+    expect(component.namespaceLabel()).toBe('All Namespaces');
+    expect(component.namespaceClass('', true)).toContain('active');
+  });
 });

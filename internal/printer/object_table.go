@@ -22,14 +22,15 @@ import (
 
 // ObjectTable is a helper for creating a table containing a list of objects.
 type ObjectTable struct {
-	cols          []component.TableCol
-	title         string
-	placeholder   string
-	rows          []component.TableRow
-	filters       map[string]component.TableFilter
-	sortOrder     *tableSetOrder
-	store         store.Store
-	pluginManager plugin.ManagerInterface
+	cols           []component.TableCol
+	title          string
+	placeholder    string
+	rows           []component.TableRow
+	filters        map[string]component.TableFilter
+	sortOrder      *tableSetOrder
+	store          store.Store
+	pluginManager  plugin.ManagerInterface
+	showsNamespace bool
 }
 
 // NewObjectTable creates an instance of ObjectTable.
@@ -70,6 +71,17 @@ func (ol *ObjectTable) AddRowForObject(ctx context.Context, object runtime.Objec
 	accessor, err := meta.Accessor(object)
 	if err != nil {
 		return fmt.Errorf("get accessor for object: %w", err)
+	}
+
+	if IsAllNamespaces(ctx) && accessor.GetNamespace() != "" {
+		if !ol.showsNamespace {
+			namespaceCol := component.NewTableCols("Namespace")[0]
+			cols := append([]component.TableCol{}, ol.cols[:1]...)
+			cols = append(cols, namespaceCol)
+			ol.cols = append(cols, ol.cols[1:]...)
+			ol.showsNamespace = true
+		}
+		row["Namespace"] = component.NewText(accessor.GetNamespace())
 	}
 
 	if accessor.GetDeletionTimestamp() != nil {
