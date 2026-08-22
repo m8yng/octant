@@ -31,6 +31,25 @@ import (
 	"github.com/vmware-tanzu/octant/pkg/view/component"
 )
 
+func TestDescribeContainerPortsWithoutTypeMeta(t *testing.T) {
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	pod := &corev1.Pod{ObjectMeta: metav1.ObjectMeta{Name: "dns", Namespace: "kube-system"}}
+	gvk := schema.GroupVersionKind{Version: "v1", Kind: "Pod"}
+	portForwarder := pffake.NewMockPortForwarder(controller)
+	portForwarder.EXPECT().FindPod("kube-system", gvk, "dns").Return(nil, nil)
+
+	ports, err := describeContainerPorts(context.Background(), pod, []corev1.ContainerPort{
+		{ContainerPort: 53, Protocol: corev1.ProtocolUDP},
+		{ContainerPort: 53, Protocol: corev1.ProtocolTCP},
+	}, portForwarder)
+	require.NoError(t, err)
+	require.Len(t, ports, 2)
+	require.Nil(t, ports[0].Config.Button)
+	require.NotNil(t, ports[1].Config.Button)
+}
+
 func Test_ContainerConfiguration(t *testing.T) {
 	var (
 		propagation    = corev1.MountPropagationHostToContainer

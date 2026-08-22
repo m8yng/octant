@@ -11,14 +11,10 @@
     </div>
     <div class="port-actions">
       <ng-container *ngIf="port.config.state?.isForwarded">
-        <a
-          class="open-pf"
-          href="http://localhost:{{ port.config.state.port }}"
-          target="_blank"
-        >
+        <span class="open-pf">
           <cds-icon shape="link"></cds-icon>
-          http://localhost:{{ port.config.state.port }}
-        </a>
+          localhost:{{ port.config.state.port }}
+        </span>
       </ng-container>
       <app-button-group
         [view]="port.config.buttonGroup"

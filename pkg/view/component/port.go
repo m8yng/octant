@@ -112,6 +112,10 @@ func (t *Ports) MarshalJSON() ([]byte, error) {
 }
 
 func describeButton(namespace, apiVersion, kind, name string, port int, pfs PortForwardState) *ButtonGroup {
+	if !pfs.IsForwardable && !pfs.IsForwarded {
+		return nil
+	}
+
 	buttonGroup := NewButtonGroup()
 	var buttonText, actionName string
 	var payload action.Payload

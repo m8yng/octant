@@ -32,7 +32,7 @@ type portForwardCreateRequest struct {
 }
 
 func (req *portForwardCreateRequest) Validate() error {
-	if req.APIVersion != "v1" && req.Kind == "Pod" {
+	if req.APIVersion != "v1" || req.Kind != "Pod" {
 		return errors.New("only supports forwards for v1 Pods")
 	}
 

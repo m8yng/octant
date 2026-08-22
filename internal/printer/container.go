@@ -260,10 +260,6 @@ func findContainerStatus(pod *corev1.Pod, name string, isInit bool) (*corev1.Con
 	return nil, &containerNotFoundError{name: name}
 }
 
-func isPodGVK(gvk schema.GroupVersionKind) bool {
-	return gvk.Group == "" && gvk.Version == "v1" && gvk.Kind == "Pod"
-}
-
 type notFound interface {
 	NotFound() bool
 }
@@ -279,18 +275,11 @@ func describeContainerPorts(
 	var name string
 	var err error
 	gvk := parent.GetObjectKind().GroupVersionKind()
-	isPod := isPodGVK(gvk)
+	pod, isPod := parent.(*corev1.Pod)
 	if isPod {
-		accessor := meta.NewAccessor()
-		namespace, err = accessor.Namespace(parent)
-		if err != nil {
-			return nil, errors.Wrap(err, "find parent namespace")
-		}
-
-		name, err = accessor.Name(parent)
-		if err != nil {
-			return nil, errors.Wrap(err, "find parent name")
-		}
+		gvk = schema.GroupVersionKind{Version: "v1", Kind: "Pod"}
+		namespace = pod.Namespace
+		name = pod.Name
 	}
 
 	states, err := portForwardService.FindPod(namespace, gvk, name)
