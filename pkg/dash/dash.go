@@ -115,7 +115,7 @@ func NewRunner(ctx context.Context, logger log.Logger, opts ...RunnerOption) (*R
 		return nil, fmt.Errorf("failed to create dash instance: %w", err)
 	}
 
-	if viper.GetBool("disable-open-browser") {
+	if options.DisableOpenBrowser || viper.GetBool("disable-open-browser") {
 		d.willOpenBrowser = false
 	}
 

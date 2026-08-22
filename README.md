@@ -22,7 +22,7 @@ OctantR is under active revival. It is based on Octant 0.25.1, and there is not 
 
 Requirements:
 
-- Go 1.17 or newer
+- Go 1.17 or newer (Go 1.25 for the desktop app)
 - Node.js 20 or newer
 - pnpm 11
 - Access to a Kubernetes cluster through a kubeconfig
@@ -30,12 +30,22 @@ Requirements:
 ```sh
 git clone https://github.com/m8yng/octant.git
 cd octant
-go run build.go go-install
-NG_CLI_ANALYTICS=false go run build.go ci-quick
-./build/octant
+make run
 ```
 
 Open <http://127.0.0.1:7777> if the browser does not open automatically.
+
+Available targets:
+
+```text
+make help           Show available targets
+make build          Build the browser binary
+make run            Build and run in the browser
+make run-desktop    Build and run the Wails desktop app
+make desktop-build  Build the Wails desktop binary
+```
+
+Desktop prerequisites are documented in [`desktop/README.md`](desktop/README.md).
 
 Verify cluster access before starting:
 

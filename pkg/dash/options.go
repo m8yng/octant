@@ -32,6 +32,7 @@ type Options struct {
 	Listener               net.Listener
 	Namespace              string
 	Namespaces             []string
+	DisableOpenBrowser     bool
 	UserAgent              string
 
 	clusterClient          cluster.ClientInterface
@@ -184,6 +185,15 @@ func WithObjectStore(objectStore store.Store) RunnerOption {
 		kubeConfigOption: kubeconfig.Noop(),
 		nonClusterOption: func(o *Options) {
 			o.objectStore = objectStore
+		},
+	}
+}
+
+func WithoutOpeningBrowser() RunnerOption {
+	return RunnerOption{
+		kubeConfigOption: kubeconfig.Noop(),
+		nonClusterOption: func(o *Options) {
+			o.DisableOpenBrowser = true
 		},
 	}
 }
