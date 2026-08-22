@@ -45,7 +45,7 @@ make run-desktop    Build and run the Wails desktop app
 make desktop-build  Build the Wails desktop binary
 ```
 
-Desktop prerequisites are documented in [`desktop/README.md`](desktop/README.md).
+The desktop app uses [Wails v3](https://github.com/wailsapp/wails) and reuses the same local HTTP/WebSocket backend as browser mode. Desktop prerequisites are documented in [`desktop/README.md`](desktop/README.md).
 
 Verify cluster access before starting:
 
