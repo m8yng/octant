@@ -73,10 +73,15 @@ func (k Key) Validate() error {
 
 	if k.LabelSelector != nil && len(k.LabelSelector.MatchExpressions) > 0 {
 		for _, v := range k.LabelSelector.MatchExpressions {
-			if (v.Operator == metav1.LabelSelectorOpIn || v.Operator == metav1.LabelSelectorOpNotIn) && len(v.Values) == 0 {
-				err = multierror.Append(err, errors.New("operator In/NotIn must not have empty values array"))
-			} else if (v.Operator == metav1.LabelSelectorOpExists || v.Operator == metav1.LabelSelectorOpDoesNotExist) && len(v.Values) > 0 {
-				err = multierror.Append(err, errors.New("operator Exists/DoesNotExist must have empty values array"))
+			switch v.Operator {
+			case metav1.LabelSelectorOpIn, metav1.LabelSelectorOpNotIn:
+				if len(v.Values) == 0 {
+					err = multierror.Append(err, errors.New("operator In/NotIn must not have empty values array"))
+				}
+			case metav1.LabelSelectorOpExists, metav1.LabelSelectorOpDoesNotExist:
+				if len(v.Values) > 0 {
+					err = multierror.Append(err, errors.New("operator Exists/DoesNotExist must have empty values array"))
+				}
 			}
 		}
 	}

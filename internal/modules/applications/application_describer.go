@@ -104,7 +104,12 @@ func (a ApplicationDescriber) Reset(ctx context.Context) error {
 	return nil
 }
 
-func loadAppObjects(ctx context.Context, dashConfig config.Dash, namespace, name, instance, version string) (*unstructured.UnstructuredList, error) {
+func loadAppObjects(
+	ctx context.Context,
+	dashConfig config.Dash,
+	namespace string,
+	d descriptor,
+) (*unstructured.UnstructuredList, error) {
 	out := &unstructured.UnstructuredList{}
 
 	ch := make(chan *unstructured.Unstructured)
@@ -174,9 +179,9 @@ func loadAppObjects(ctx context.Context, dashConfig config.Dash, namespace, name
 				APIVersion: resourceList.GroupVersion,
 				Kind:       apiResource.Kind,
 				Selector: &labels.Set{
-					appLabelName:     name,
-					appLabelInstance: instance,
-					appLabelVersion:  version,
+					appLabelName:     d.name,
+					appLabelInstance: d.instance,
+					appLabelVersion:  d.version,
 				},
 			}
 
@@ -260,7 +265,12 @@ func resourceViewerFactory(ctx context.Context, namespace string, options descri
 		return nil, errors.Wrap(err, "extract descriptor from fields")
 	}
 
-	objects, err := loadAppObjects(ctx, options.Dash, namespace, d.name, d.instance, d.version)
+	objects, err := loadAppObjects(
+		ctx,
+		options.Dash,
+		namespace,
+		d,
+	)
 	if err != nil {
 		return nil, err
 	}

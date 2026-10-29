@@ -282,71 +282,70 @@ func (t *jsPlugin) Content(ctx context.Context, contentPath string) (component.C
 			return
 		}
 
-		rawTitle, ok := contentObj["title"]
-		if ok {
-			titles, ok := rawTitle.([]interface{})
-			if !ok {
-				errCh <- fmt.Errorf("unable to get title array from content")
-				return
-			}
-			for i, c := range titles {
-				realTitle, err := javascript.ConvertToComponent(fmt.Sprintf("title[%d]", i), c)
-				if err != nil {
-					errCh <- fmt.Errorf("unable to extract title: %w", err)
-					return
-				}
-
-				title, ok := realTitle.(component.TitleComponent)
-				if !ok {
-					errCh <- fmt.Errorf("unable to convert component to TitleComponent")
-					return
-				}
-				cr.Title = append(cr.Title, title)
-			}
-		}
-
-		rawComponents, ok := contentObj["viewComponents"]
-		if !ok {
-			errCh <- fmt.Errorf("unable to get viewComponents from content")
-			return
-		}
-
-		components, ok := rawComponents.([]interface{})
-		if !ok {
-			errCh <- fmt.Errorf("unable to get viewComponents list")
-			return
-		}
-
-		for i, c := range components {
-			realComponent, err := javascript.ConvertToComponent(fmt.Sprintf("viewComponent[%d]", i), c)
-			if err != nil {
-				errCh <- fmt.Errorf("unable to extract component: %w", err)
-				return
-			}
-			cr.Add(realComponent)
-		}
-
-		rawButtonGroup, ok := contentObj["buttonGroup"]
-		if ok {
-			realButtonGroup, err := javascript.ConvertToComponent("buttonGroup", rawButtonGroup)
-			if err != nil {
-				errCh <- fmt.Errorf("unable to extract buttonGroup: %w", err)
-				return
-			}
-
-			buttonGroup, ok := realButtonGroup.(*component.ButtonGroup)
-			if !ok {
-				errCh <- fmt.Errorf("unable to convert extracted component to buttonGroup")
-				return
-			}
-
-			cr.AddTitleComponents(buttonGroup)
-		}
-		errCh <- nil
+		cr, err = contentResponseFromMap(contentObj)
+		errCh <- err
 	})
 
 	if err := <-errCh; err != nil {
 		return cr, err
+	}
+	return cr, nil
+}
+
+func contentResponseFromMap(contentObj map[string]interface{}) (component.ContentResponse, error) {
+	cr := component.ContentResponse{}
+
+	rawTitle, ok := contentObj["title"]
+	if ok {
+		titles, ok := rawTitle.([]interface{})
+		if !ok {
+			return cr, fmt.Errorf("unable to get title array from content")
+		}
+		for i, c := range titles {
+			realTitle, err := javascript.ConvertToComponent(fmt.Sprintf("title[%d]", i), c)
+			if err != nil {
+				return cr, fmt.Errorf("unable to extract title: %w", err)
+			}
+
+			title, ok := realTitle.(component.TitleComponent)
+			if !ok {
+				return cr, fmt.Errorf("unable to convert component to TitleComponent")
+			}
+			cr.Title = append(cr.Title, title)
+		}
+	}
+
+	rawComponents, ok := contentObj["viewComponents"]
+	if !ok {
+		return cr, fmt.Errorf("unable to get viewComponents from content")
+	}
+
+	components, ok := rawComponents.([]interface{})
+	if !ok {
+		return cr, fmt.Errorf("unable to get viewComponents list")
+	}
+
+	for i, c := range components {
+		realComponent, err := javascript.ConvertToComponent(fmt.Sprintf("viewComponent[%d]", i), c)
+		if err != nil {
+			return cr, fmt.Errorf("unable to extract component: %w", err)
+		}
+		cr.Add(realComponent)
+	}
+
+	rawButtonGroup, ok := contentObj["buttonGroup"]
+	if ok {
+		realButtonGroup, err := javascript.ConvertToComponent("buttonGroup", rawButtonGroup)
+		if err != nil {
+			return cr, fmt.Errorf("unable to extract buttonGroup: %w", err)
+		}
+
+		buttonGroup, ok := realButtonGroup.(*component.ButtonGroup)
+		if !ok {
+			return cr, fmt.Errorf("unable to convert extracted component to buttonGroup")
+		}
+
+		cr.AddTitleComponents(buttonGroup)
 	}
 	return cr, nil
 }
@@ -633,51 +632,52 @@ func extractMetadata(vm *goja.Runtime, pluginValue goja.Value) (*Metadata, error
 
 	metadata.Capabilities.IsModule = this.Get("isModule").ToBoolean()
 
-	if capability, ok := this.Get("capabilities").Export().(map[string]interface{}); ok {
-		for k, v := range capability {
-			switch k {
-			case "supportPrinterConfig":
-				GVKs, err := javascript.ConvertToGVKs(k, v)
-				if err != nil {
-					return nil, fmt.Errorf("extractGvks: %w", err)
-				}
-				metadata.Capabilities.SupportsPrinterConfig = append(metadata.Capabilities.SupportsPrinterConfig, GVKs...)
-			case "supportPrinterStatus":
-				GVKs, err := javascript.ConvertToGVKs(k, v)
-				if err != nil {
-					return nil, fmt.Errorf("extractGvks: %w", err)
-				}
-				metadata.Capabilities.SupportsPrinterStatus = append(metadata.Capabilities.SupportsPrinterStatus, GVKs...)
-			case "supportPrinterItems":
-				GVKs, err := javascript.ConvertToGVKs(k, v)
-				if err != nil {
-					return nil, fmt.Errorf("extractGvks: %w", err)
-				}
-				metadata.Capabilities.SupportsPrinterItems = append(metadata.Capabilities.SupportsPrinterItems, GVKs...)
-			case "supportObjectStatus":
-				GVKs, err := javascript.ConvertToGVKs(k, v)
-				if err != nil {
-					return nil, fmt.Errorf("extractGvks: %w", err)
-				}
-				metadata.Capabilities.SupportsObjectStatus = append(metadata.Capabilities.SupportsObjectStatus, GVKs...)
-			case "supportTab":
-				GVKs, err := javascript.ConvertToGVKs(k, v)
-				if err != nil {
-					return nil, fmt.Errorf("extractGvks: %w", err)
-				}
-				metadata.Capabilities.SupportsTab = append(metadata.Capabilities.SupportsTab, GVKs...)
-			case "actionNames":
-				actions, err := javascript.ConvertToActions(v)
-				if err != nil {
-					return nil, fmt.Errorf("extractActions: %w", err)
-				}
-				metadata.Capabilities.ActionNames = append(metadata.Capabilities.ActionNames, actions...)
-			default:
-				fmt.Printf("unknown capability: %s\n", k)
-			}
-		}
-	} else {
+	capability, ok := this.Get("capabilities").Export().(map[string]interface{})
+	if !ok {
 		return nil, fmt.Errorf("unable to get capabilities for plugin class")
+	}
+
+	for k, v := range capability {
+		switch k {
+		case "supportPrinterConfig":
+			GVKs, err := javascript.ConvertToGVKs(k, v)
+			if err != nil {
+				return nil, fmt.Errorf("extractGvks: %w", err)
+			}
+			metadata.Capabilities.SupportsPrinterConfig = append(metadata.Capabilities.SupportsPrinterConfig, GVKs...)
+		case "supportPrinterStatus":
+			GVKs, err := javascript.ConvertToGVKs(k, v)
+			if err != nil {
+				return nil, fmt.Errorf("extractGvks: %w", err)
+			}
+			metadata.Capabilities.SupportsPrinterStatus = append(metadata.Capabilities.SupportsPrinterStatus, GVKs...)
+		case "supportPrinterItems":
+			GVKs, err := javascript.ConvertToGVKs(k, v)
+			if err != nil {
+				return nil, fmt.Errorf("extractGvks: %w", err)
+			}
+			metadata.Capabilities.SupportsPrinterItems = append(metadata.Capabilities.SupportsPrinterItems, GVKs...)
+		case "supportObjectStatus":
+			GVKs, err := javascript.ConvertToGVKs(k, v)
+			if err != nil {
+				return nil, fmt.Errorf("extractGvks: %w", err)
+			}
+			metadata.Capabilities.SupportsObjectStatus = append(metadata.Capabilities.SupportsObjectStatus, GVKs...)
+		case "supportTab":
+			GVKs, err := javascript.ConvertToGVKs(k, v)
+			if err != nil {
+				return nil, fmt.Errorf("extractGvks: %w", err)
+			}
+			metadata.Capabilities.SupportsTab = append(metadata.Capabilities.SupportsTab, GVKs...)
+		case "actionNames":
+			actions, err := javascript.ConvertToActions(v)
+			if err != nil {
+				return nil, fmt.Errorf("extractActions: %w", err)
+			}
+			metadata.Capabilities.ActionNames = append(metadata.Capabilities.ActionNames, actions...)
+		default:
+			fmt.Printf("unknown capability: %s\n", k)
+		}
 	}
 
 	return metadata, nil

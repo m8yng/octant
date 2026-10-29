@@ -8,13 +8,13 @@ package component
 import "github.com/vmware-tanzu/octant/internal/util/json"
 
 var defaultDurations = []Since{
-	{"5 minutes", 300},
-	{"10 minutes", 600},
-	{"30 minutes", 1800},
-	{"1 hour", 3600},
-	{"3 hours", 10800},
-	{"5 hours", 18000},
-	{"Creation", -1},
+	{Label: "5 minutes", Seconds: 300},
+	{Label: "10 minutes", Seconds: 600},
+	{Label: "30 minutes", Seconds: 1800},
+	{Label: "1 hour", Seconds: 3600},
+	{Label: "3 hours", Seconds: 10800},
+	{Label: "5 hours", Seconds: 18000},
+	{Label: "Creation", Seconds: -1},
 }
 
 type Since struct {

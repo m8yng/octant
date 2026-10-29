@@ -56,17 +56,21 @@ func (td *tolerationDescriber) describe(toleration corev1.Toleration) (string, e
 	msgFmt := taintFmt
 	var a []interface{}
 
-	if toleration.Effect != "" && toleration.Key == "" && toleration.Value == "" {
+	hasEffect := toleration.Effect != ""
+	hasKey := toleration.Key != ""
+	hasValue := toleration.Value != ""
+
+	if hasEffect && !hasKey && !hasValue {
 		a = append(a, string(toleration.Effect))
-	} else if toleration.Effect != "" && toleration.Key != "" && toleration.Value == "" {
+	} else if hasEffect && hasKey && !hasValue {
 		a = append(a, fmt.Sprintf("%s:%s", toleration.Key, toleration.Effect))
-	} else if toleration.Key != "" && toleration.Value != "" && toleration.Effect == "" {
+	} else if hasKey && hasValue && !hasEffect {
 		a = append(a, fmt.Sprintf("%s:%s", toleration.Key, toleration.Value))
-	} else if toleration.Key != "" && toleration.Value != "" && toleration.Effect != "" {
+	} else if hasKey && hasValue && hasEffect {
 		a = append(a, fmt.Sprintf("%s:%s:%s", toleration.Key, toleration.Value, toleration.Effect))
-	} else if toleration.Key != "" && toleration.Operator == corev1.TolerationOpExists {
+	} else if hasKey && toleration.Operator == corev1.TolerationOpExists {
 		a = append(a, toleration.Key)
-	} else if toleration.Key == "" && toleration.Operator == corev1.TolerationOpExists {
+	} else if !hasKey && toleration.Operator == corev1.TolerationOpExists {
 		msgFmt = wildcardFmt
 	} else {
 		return "", errors.Errorf("unable to describe toleration: %v", toleration)

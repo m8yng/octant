@@ -52,7 +52,7 @@ import (
 	"github.com/vmware-tanzu/octant/pkg/plugin"
 	pluginAPI "github.com/vmware-tanzu/octant/pkg/plugin/api"
 	"github.com/vmware-tanzu/octant/pkg/store"
-	_ "github.com/vmware-tanzu/octant/web"
+	_ "github.com/vmware-tanzu/octant/web" // Registers the frontend handler when built with the embedded tag.
 )
 
 type Runner struct {
@@ -110,7 +110,15 @@ func NewRunner(ctx context.Context, logger log.Logger, opts ...RunnerOption) (*R
 		return nil, fmt.Errorf("failed to start service api: %w", apiErr)
 	}
 
-	d, err := newDash(options.Listener, options.Namespace, options.FrontendURL, options.BrowserPath, apiService, pluginService, logger)
+	d, err := newDash(
+		options.Listener,
+		options.Namespace,
+		options.FrontendURL,
+		options.BrowserPath,
+		apiService,
+		pluginService,
+		logger,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create dash instance: %w", err)
 	}
@@ -132,7 +140,13 @@ func (r *Runner) apiFromKubeConfig(kubeConfig string, opts ...RunnerOption) (int
 		return r.initAPI(r.ctx, logger, opts...)
 	} else {
 		logger.Infof("no valid kube config found, initializing loading API")
-		return internalAPI.NewLoadingAPI(r.ctx, internalAPI.PathPrefix, r.actionManager, r.streamingConnectionManager, logger), nil, nil
+		return internalAPI.NewLoadingAPI(
+			r.ctx,
+			internalAPI.PathPrefix,
+			r.actionManager,
+			r.streamingConnectionManager,
+			logger,
+		), nil, nil
 	}
 }
 

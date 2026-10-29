@@ -100,7 +100,7 @@ func (manifest *ManifestConfiguration) GetImageManifest(ctx context.Context, hos
 
 	configOutput, err := json.MarshalIndent(rawConfiguration, "", "  ")
 
-	manifest.imageCache[imageEntry] = ImageManifest{string(rawManifest), string(configOutput)}
+	manifest.imageCache[imageEntry] = ImageManifest{Manifest: string(rawManifest), Configuration: string(configOutput)}
 
 	return string(rawManifest), string(configOutput), err
 }
